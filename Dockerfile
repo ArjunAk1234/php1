@@ -1,6 +1,6 @@
-FROM php:8.1-apache
+FROM php:8.2-apache
 
-# Install dependencies
+# Install required dependencies
 RUN apt-get update && apt-get install -y \
     libcurl4-openssl-dev \
     pkg-config \
@@ -11,17 +11,18 @@ RUN apt-get update && apt-get install -y \
     && pecl install mongodb \
     && docker-php-ext-enable mongodb
 
-# Enable Apache mod_rewrite
+# Enable Apache rewrite
 RUN a2enmod rewrite
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory and copy app files
+# Copy only composer files first to leverage Docker caching
+COPY composer.json /var/www/html/
 WORKDIR /var/www/html/
-COPY . /var/www/html/
-
-# Install PHP dependencies
 RUN composer install
+
+# Copy all source files
+COPY . /var/www/html/
 
 EXPOSE 80

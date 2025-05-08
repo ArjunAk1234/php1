@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     && docker-php-ext-install pdo \
-    && pecl install mongodb \
+    && pecl install  mongodb-1.19.1 \
     && docker-php-ext-enable mongodb
 
 # Enable Apache rewrite
